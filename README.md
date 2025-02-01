@@ -1,4 +1,1 @@
-### AgentVibes
-
-Agentic workflows straight in jupyter notebook.
-# VAEverywhere
+Ship them VAs to order us alcohol and get folks here drunk
