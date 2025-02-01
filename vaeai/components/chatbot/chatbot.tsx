@@ -19,9 +19,9 @@ const ChatMessage = ({ message, isUser }: { message: string; isUser: boolean }) 
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([
-    { text: "Hi! How can I help you today?", isUser: false }
+    { content: "Hi! How can I help you today?", role: 'assistant' }
   ]);
-  const [inputMessage, setInputMessage] = useState('');
+  const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
@@ -35,37 +35,64 @@ const Chatbot = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Simple response generator - replace with actual API call
-  const generateBotResponse = async (userMessage: string) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const responses = [
-      "I understand. Can you tell me more about that?",
-      "That's interesting! How does that make you feel?",
-      "Let me think about that for a moment...",
-      "I see what you mean. What would you like to know more about?",
-      "Could you elaborate on that?"
-    ];
-    
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    if (!inputMessage.trim()) return;
+    if (!input.trim()) return;
 
     // Add user message
-    const userMessage = { text: inputMessage, isUser: true };
+    const userMessage = { content: input, role: 'user' };
     setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');    
+    setInput('');
     setIsLoading(true);
 
-    // Generate and add bot response
-    const botResponse = await generateBotResponse(inputMessage);
-    setMessages(prev => [...prev, { text: botResponse, isUser: false }]);
-    setIsLoading(false);
+    try {
+      const response = await fetch('http://localhost:8000/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage]
+        }),
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+      
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let assistantMessage = { content: '', role: 'assistant' };
+      
+      setMessages(prev => [...prev, assistantMessage]);
+
+      while (true) {
+        const { value, done } = await reader!.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+            
+            assistantMessage.content += data;
+            setMessages(prev => [
+              ...prev.slice(0, -1),
+              { ...assistantMessage }
+            ]);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessages(prev => [...prev, {
+        content: 'Sorry, there was an error processing your request.',
+        role: 'assistant'
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -80,8 +107,8 @@ const Chatbot = () => {
         {messages.map((message, index) => (
           <ChatMessage
             key={index}
-            message={message.text}
-            isUser={message.isUser}
+            message={message.content}
+            isUser={message.role === 'user'}
           />
         ))}
         {isLoading && (
@@ -103,8 +130,8 @@ const Chatbot = () => {
         <div className="flex gap-2">
           <input
             type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
             className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
