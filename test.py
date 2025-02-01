@@ -1,16 +1,26 @@
 from langchain_openai import ChatOpenAI
-from browser_use import Agent, Browser
+from browser_use import Agent, Browser, BrowserConfig
 from browser_use.browser.context import BrowserContext
+
 import asyncio
 from dotenv import load_dotenv
 import os
+import tempfile
 
 load_dotenv()
 
 
 async def main():
-    browser = Browser()
+    # Create a temporary directory for the persistent context
+    user_data_dir = os.path.join(tempfile.gettempdir(), "playwright_dev_profile")
     
+    # Browser context configuration
+    config = BrowserConfig(
+        headless=False,
+        disable_security=True,
+    )
+    browser = Browser(config=config)
+
     async with await browser.new_context() as context:
         agent = Agent(
             task="Go to Reddit, search for 'browser-use', click on the first post and return the first comment.",
