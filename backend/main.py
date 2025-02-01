@@ -4,8 +4,9 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
-from models import Message, ChatRequest
-import asyncio
+from models import Message, ChatRequest, ChatResponse
+from helpers import generate_response_stream
+
 app = FastAPI()
 
 app.add_middleware(
@@ -15,16 +16,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-#--------_FUNCTIONS_--------
-#Function to generate a streaming response
-async def generate_response_stream(messages):
-    response_text = "This where the response should be generated"
-    for char in response_text:
-        yield f"data: {char}\n\n"
-        await asyncio.sleep(0.05)  # Simulate delay
-    yield "data: [DONE]\n\n"
-
 
 
 #--------_ENDPOINTS_--------
