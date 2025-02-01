@@ -5,7 +5,7 @@ from typing import List
 
 class AI:
     def __init__(self):
-        self.api_key = os.getenv("OPEN_AI_KEY")
+        #self.api_key = os.getenv("OPEN_AI_KEY")
         if not self.api_key:
             print("API KEY: ", self.api_key)
 
