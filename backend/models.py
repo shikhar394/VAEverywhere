@@ -10,3 +10,13 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
+
+
+class UserPreference(BaseModel):
+    product_type: str
+    quantity: str
+    is_priority: bool # TODO default to true
+    delivery_address: str
+    details: str
+    preffered_brand: str
+

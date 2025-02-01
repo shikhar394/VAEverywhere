@@ -46,44 +46,43 @@ const Chatbot = () => {
     setIsLoading(true);
 
     try {
+      const requestMessages = [...messages, userMessage].map(msg => ({
+        content: String(msg.content),  // Ensure content is a string
+        role: String(msg.role)         // Ensure role is a string
+      }));
+      
+      const requestBody = {
+        messages: requestMessages
+      };
+      
+      console.log("Request body:", JSON.stringify(requestBody, null, 2));
+      
       const response = await fetch('http://localhost:8000/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          messages: [...messages, userMessage]
-        }),
+        body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) throw new Error('Network response was not ok');
-      
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let assistantMessage = { content: '', role: 'assistant' };
-      
-      setMessages(prev => [...prev, assistantMessage]);
-
-      while (true) {
-        const { value, done } = await reader!.read();
-        if (done) break;
-        
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') continue;
-            
-            assistantMessage.content += data;
-            setMessages(prev => [
-              ...prev.slice(0, -1),
-              { ...assistantMessage }
-            ]);
-          }
-        }
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.warn('API Error Status:', response.status);
+        console.warn('API Error Response:', errorText);
+        console.warn('API Error Response:', response);
       }
+      
+      debugger;
+      const data = await response.json();
+      const assistantMessage = {
+        content: data.response || data.message, // Handle both possible response formats
+        role: 'assistant'
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+      
+      // If you need to debug, log the message directly
+      console.log("New assistant message:", assistantMessage);
+      console.log("Current messages:", [...messages, assistantMessage]);
     } catch (error) {
       console.error('Error:', error);
       setMessages(prev => [...prev, {
