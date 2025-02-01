@@ -1,0 +1,6 @@
+# venv
+.venv
+
+# secret keys
+openai_api_key.env
+*.env
