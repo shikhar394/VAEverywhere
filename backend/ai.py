@@ -5,7 +5,7 @@ from typing import List
 
 class AI:
     def __init__(self):
-        self.api_key = "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"
+        self.api_key = os.getenv("OPEN_AI_KEY")
         if not self.api_key:
             print("API KEY: ", self.api_key)
 
