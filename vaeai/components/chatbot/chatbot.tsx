@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 
+
 const ChatMessage = ({ message, isUser }: { message: string; isUser: boolean }) => (
   <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
     <div
@@ -72,7 +73,6 @@ const Chatbot = () => {
         console.warn('API Error Response:', response);
       }
       
-      debugger;
       const data = await response.json();
       const assistantMessage = {
         content: data.response || data.message, // Handle both possible response formats
@@ -83,6 +83,12 @@ const Chatbot = () => {
       // If you need to debug, log the message directly
       console.log("New assistant message:", assistantMessage);
       console.log("Current messages:", [...messages, assistantMessage]);
+
+      // Handle preferences - Order info done! Send message to backend to get the preferences
+      debugger;
+      if (assistantMessage.content.toLowerCase().includes("order info done")) {
+        handlePreferences(messages);
+      }
     } catch (error) {
       console.error('Error:', error);
       setMessages(prev => [...prev, {
@@ -94,6 +100,25 @@ const Chatbot = () => {
     }
   };
 
+
+  // Handle preferences - Order info done! Send message to backend to get the preferences
+  const handlePreferences = async (messages: any) => {
+
+    const toText = messages.map((msg: any) => `${msg.role}: ${msg.content}`).join("\n");
+    //debugger;
+
+    
+    const response = await fetch('http://localhost:8000/preferences', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"content": toText}),
+    });
+    
+    const data = await response.json();
+    console.log("Preferences response:", data);
+  };
   return (
     <div className="flex flex-col h-screen w-full max-w-2xl mx-auto bg-white rounded-lg shadow-lg">
       {/* Chat header */}

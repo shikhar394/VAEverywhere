@@ -43,3 +43,11 @@ async def chat_endpoint(request: ChatRequest):
             status_code=500,
             detail=f"Internal server error: {str(e)}"
         )
+    
+@app.post("/preferences")
+async def preferences_endpoint(request: dict):
+    print("REQUEST in preferences: ", request)
+    ai = AI()
+    response = await ai.get_preferences(request["content"])
+    print("RESPONSE in preferences: ", response)
+    return {"response": response}

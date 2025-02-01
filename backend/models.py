@@ -12,11 +12,20 @@ class ChatResponse(BaseModel):
     response: str
 
 
-class UserPreference(BaseModel):
+class User_Preference(BaseModel):
     product_type: str
     quantity: str
     is_priority: bool # TODO default to true
     delivery_address: str
     details: str
     preffered_brand: str
+
+class Product_format(BaseModel):
+  brand: str
+  url: str
+  price: float
+  package_size: int
+  number_packages: int
+  description: str
+
 
