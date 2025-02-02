@@ -17,7 +17,7 @@ class UberEatConfig:
     search_term: str
     message: str
     headless: bool = False
-    model: str = "gpt-4o-mini"
+    model: str = "gpt-4o"
     base_url: str = "https://www.ubereats.com/ca/feed?diningMode=DELIVERY&pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMjM1JTIwTWFyaW5lciUyMFRlcnIlMjIlMkMlMjJyZWZlcmVuY2UlMjIlM0ElMjIxMDgwODRhZi1lMzc1LTE4ZmEtMGZhNi1lYjA0OWI3Yzk0OGUlMjIlMkMlMjJyZWZlcmVuY2VUeXBlJTIyJTNBJTIydWJlcl9wbGFjZXMlMjIlMkMlMjJsYXRpdHVkZSUyMiUzQTQzLjYzOTczNTUlMkMlMjJsb25naXR1ZGUlMjIlM0EtNzkuMzkyMDg1NCU3RA%3D%3D"
 
 
@@ -43,9 +43,8 @@ def create_uber_eat_agent(config: UberEatConfig):
         1. Navigate to {config.base_url} using the chrome address bar.
         2. Look for the text input field at the top of the page that says "Search Uber Eats?"
         3. Click the input field and type exactly this message:
-        "{config.search_term}" and hit enter.
-        
-        6. Click the first result in the search results.
+        "{config.search_term}".
+        4. Hit enter while in the input field.
         
         Important:
         - Wait for each element to load before interacting
@@ -58,7 +57,7 @@ def create_uber_eat_agent(config: UberEatConfig):
         browser=browser,
     )
 
-async def place_order(agent: Agent):
+async def find_items_for_decision(agent: Agent):
     try:
         await agent.run(max_steps=100)
         agent.create_history_gif()
@@ -76,7 +75,7 @@ def main():
         base_url="https://www.ubereats.com/ca/feed?diningMode=DELIVERY&pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMjM1JTIwTWFyaW5lciUyMFRlcnIlMjIlMkMlMjJyZWZlcmVuY2UlMjIlM0ElMjIxMDgwODRhZi1lMzc1LTE4ZmEtMGZhNi1lYjA0OWI3Yzk0OGUlMjIlMkMlMjJyZWZlcmVuY2VUeXBlJTIyJTNBJTIydWJlcl9wbGFjZXMlMjIlMkMlMjJsYXRpdHVkZSUyMiUzQTQzLjYzOTczNTUlMkMlMjJsb25naXR1ZGUlMjIlM0EtNzkuMzkyMDg1NCU3RA%3D%3D",
     )
     agent = create_uber_eat_agent(config)
-    asyncio.run(place_order(agent))
+    asyncio.run(find_items_for_decision(agent))
 
 if __name__ == "__main__":
     main()
