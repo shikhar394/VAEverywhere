@@ -10,11 +10,13 @@ async def generate_response_stream(messages):
 
 # Convert old product format to new product format
 def change_format(old_dict):
+  list_orders = []
   print("OLD DICT: ", old_dict)
   new_dict = {}
-  new_dict['url'] = old_dict.url
+  new_dict['product_url'] = old_dict.url
   new_dict["quantity"] = old_dict.number_packages
-  return new_dict
+  list_orders.append(new_dict)
+  return list_orders
 
 def change_format_to_string(data):
    return ", ".join(f"{key}: {value}" for key, value in data.items())

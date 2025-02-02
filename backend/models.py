@@ -29,3 +29,5 @@ class Product_format(BaseModel):
   description: str
 
 
+class List_Products(BaseModel):
+    products: List[Product_format]

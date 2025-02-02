@@ -1,12 +1,12 @@
 from openai import OpenAI
-from models import User_Preference, Product_format
+from models import User_Preference, Product_format, List_Products
 import os
 from typing import List
 
 class AI:
     def __init__(self):
         #self.api_key = os.getenv("OPEN_AI_KEY")
-        self.api_key = os.getenv("OPEN_AI_KEY")
+        self.api_key = os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("OPENAI_API_KEY environment variable is not set")
         
@@ -82,14 +82,14 @@ Do not overwhelm the user with too many questions at once. Ask only one or two r
         
         return completion.choices[0].message.parsed
     
-    def make_decision(self, instruction: str, documents: str) -> Product_format:
+    def make_decision(self, instruction: str, documents: str) -> List_Products:
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=[
                 {"role": "system", "content": f"You are an assistant and need to make a decision based on the following discription: {instruction}"},
-                {"role": "user", "content": f"Which product should I buy from this list: {documents}"},
+                {"role": "user", "content": f"Give me products that I should buy from this list: {documents}. Make sure that it matches the instructions and the total amount of products is enough for the number of people."},
             ],
-            response_format=Product_format,
+            response_format=List_Products,
         )
         return completion.choices[0].message.parsed
     

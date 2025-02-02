@@ -104,17 +104,17 @@ async def place_order(agent: Agent):
         print(f"Error placing order: {str(e)}")
 
 
-def main():
-    products = [
-        {
-            "product_url": "https://www.ubereats.com/ca/store/lcbo-49-spadina-avenue/wnsM8MsKWtCnjaQQ509Akg/efbc0fd0-6f52-5e25-8302-e4f65e54e938/33f28992-eebe-5ee8-9619-15260a64af77/0981ca0d-0e2e-51c4-b939-fff542398a51?storeSearchQuery=jutsu",
-            "quantity": 5
-        },
-        {
-            "product_url": "https://www.ubereats.com/ca/store/lcbo-49-spadina-avenue/wnsM8MsKWtCnjaQQ509Akg/efbc0fd0-6f52-5e25-8302-e4f65e54e938/33f28992-eebe-5ee8-9619-15260a64af77/855a3494-1d0d-5a9c-a780-68a27a570621?storeSearchQuery=jutsu",
-            "quantity": 6
-        }
-    ]
+def order_driver(products):
+    # products = [
+    #     {
+    #         "product_url": "https://www.ubereats.com/ca/store/lcbo-49-spadina-avenue/wnsM8MsKWtCnjaQQ509Akg/efbc0fd0-6f52-5e25-8302-e4f65e54e938/33f28992-eebe-5ee8-9619-15260a64af77/0981ca0d-0e2e-51c4-b939-fff542398a51?storeSearchQuery=jutsu",
+    #         "quantity": 5
+    #     },
+    #     {
+    #         "product_url": "https://www.ubereats.com/ca/store/lcbo-49-spadina-avenue/wnsM8MsKWtCnjaQQ509Akg/efbc0fd0-6f52-5e25-8302-e4f65e54e938/33f28992-eebe-5ee8-9619-15260a64af77/855a3494-1d0d-5a9c-a780-68a27a570621?storeSearchQuery=jutsu",
+    #         "quantity": 6
+    #     }
+    # ]
 
     order_details = [OrderDetails(product_url=product["product_url"], product_quantity=product["quantity"]) for index, product in enumerate(products)]
 
@@ -126,4 +126,4 @@ def main():
     asyncio.run(place_order(agent))
 
 if __name__ == "__main__":
-    main()
+    order_driver()

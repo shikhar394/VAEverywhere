@@ -9,7 +9,11 @@ from helpers import change_format, change_format_to_string, change_format_to_jso
 from ai import AI
 from dotenv import load_dotenv
 import pdb; 
-
+import json
+from fetch_ubereats_options import fetch_uber_eat_options, UberEatConfig
+import os
+import asyncio
+from create_ubereats_order import order_driver
 load_dotenv()
 
 app = FastAPI()
@@ -63,9 +67,36 @@ async def preferences_endpoint(request: dict):
     }
     #pdb.set_trace()
 
-    response_test_data = ai.generate_test_data(response_user_preferences)
-    print("RESPONSE in test data: ", response_test_data)
+    # response_test_data = ai.generate_test_data(response_user_preferences)
+    # print("RESPONSE in test data: ", response_test_data)
     #pdb.set_trace()
+
+    # config = UberEatConfig(
+    #     openai_api_key=os.getenv("OPENAI_API_KEY"),
+    #     chrome_path="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", # This is for MacOS (Chrome)
+    #     search_term="lcbo beer",
+    #     message="lcbo",
+    #     base_url="https://www.ubereats.com/ca/feed?diningMode=DELIVERY&pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMkJlZXJ0b3duJTIwUHVibGljJTIwSG91c2UlMjBUb3JvbnRvJTIyJTJDJTIycmVmZXJlbmNlJTIyJTNBJTIyNTNjMDNmMjgtMzQxYi00MGZmLWI2YWMtMzA1ZTAzMmY1Mjc1JTIyJTJDJTIycmVmZXJlbmNlVHlwZSUyMiUzQSUyMnViZXJfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0E0My42NDYwMjg2JTJDJTIybG9uZ2l0dWRlJTIyJTNBLTc5LjM4NDQzNjQlN0Q%3D",
+    #     user_preferences="prefered_brand='Corona'",
+    # )
+    # agent = asyncio.run(fetch_uber_eat_options(config))
+
+    response_user_preferences_json = {'product Type': 'beer',
+        'quantity': 'enough for 22 people',
+        'isPriority': False,
+        'deliveryAddress': '276 queen street',
+        'personalPreference': 'want something from lcbo',
+        'prefferedBrand': ''
+    }
+
+    with open('products.json', 'r') as f:
+        response_test_data = json.load(f)
+
+    from pprint import pprint
+    pprint(response_test_data)
+
+
+    pprint(response_user_preferences_json)
 
     response_decision = ai.make_decision(change_format_to_string(response_user_preferences_json), change_format_to_string(response_test_data))
     print("RESPONSE in decision: ", response_decision)
@@ -73,4 +104,71 @@ async def preferences_endpoint(request: dict):
     response_decision_formatted = change_format(response_decision)
     print("RESPONSE in decision formatted: ", response_decision_formatted)
 
+
+
     return {"response": "ok"}
+
+
+if __name__ == "__main__":
+    ai = AI()
+    # response_user_preferences = await ai.get_preferences(request["content"])
+    # response_user_preferences_json = change_format_to_json_user_preferences(response_user_preferences)
+    # print("RESPONSE in preferences: ", response_user_preferences_json)
+
+    response_user_preferences = {
+        "product_type": "beer",
+        "quantity": 20,
+        "is_priority": True,
+        "delivery_address": "2607 Queen Street W",
+        "details": "I want to wheat beer",
+        "preferred_brand": "Budweiser"
+    }
+    #pdb.set_trace()
+
+    # response_test_data = ai.generate_test_data(response_user_preferences)
+    # print("RESPONSE in test data: ", response_test_data)
+    #pdb.set_trace()
+
+    config = UberEatConfig(
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        chrome_path="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", # This is for MacOS (Chrome)
+        search_term="lcbo beer",
+        message="lcbo",
+        base_url="https://www.ubereats.com/ca/feed?diningMode=DELIVERY&pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMkJlZXJ0b3duJTIwUHVibGljJTIwSG91c2UlMjBUb3JvbnRvJTIyJTJDJTIycmVmZXJlbmNlJTIyJTNBJTIyNTNjMDNmMjgtMzQxYi00MGZmLWI2YWMtMzA1ZTAzMmY1Mjc1JTIyJTJDJTIycmVmZXJlbmNlVHlwZSUyMiUzQSUyMnViZXJfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0E0My42NDYwMjg2JTJDJTIybG9uZ2l0dWRlJTIyJTNBLTc5LjM4NDQzNjQlN0Q%3D",
+        user_preferences="prefered_brand='Corona'",
+    )
+    # agent = asyncio.run(fetch_uber_eat_options(config))
+
+    response_user_preferences_json = {'product Type': 'beer',
+        'quantity': 'enough for 5 people',
+        'isPriority': False,
+        'deliveryAddress': '276 queen street',
+        'personalPreference': 'want something from lcbo',
+        'prefferedBrand': ''}
+
+    with open('products.json', 'r') as f:
+        response_test_data = json.load(f)
+
+    from pprint import pprint
+    pprint(response_test_data)
+
+
+    pprint(response_user_preferences_json)
+
+    response_decision = ai.make_decision(change_format_to_string(response_user_preferences_json), change_format_to_string(response_test_data))
+    print("RESPONSE in decision: ", response_decision)
+
+    formatted_products = []
+    for product in response_decision.products:
+        formatted_product = {
+            "product_url": product.url,
+            "quantity": product.number_packages
+        }
+        formatted_products.append(formatted_product)
+
+    breakpoint()
+
+    order_driver(formatted_products)
+
+
+    # return {"response": "ok"}

@@ -36,7 +36,7 @@ class Product(BaseModel):
 class Products(BaseModel):
 	prods: List[Product]
 
-async def create_uber_eat_agent(config: UberEatConfig):
+async def fetch_uber_eat_options(config: UberEatConfig):
     llm = ChatOpenAI(model=config.model, api_key=config.openai_api_key)
 
     browser = Browser(
@@ -128,8 +128,8 @@ def main():
         base_url="https://www.ubereats.com/ca/feed?diningMode=DELIVERY&pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMkJlZXJ0b3duJTIwUHVibGljJTIwSG91c2UlMjBUb3JvbnRvJTIyJTJDJTIycmVmZXJlbmNlJTIyJTNBJTIyNTNjMDNmMjgtMzQxYi00MGZmLWI2YWMtMzA1ZTAzMmY1Mjc1JTIyJTJDJTIycmVmZXJlbmNlVHlwZSUyMiUzQSUyMnViZXJfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0E0My42NDYwMjg2JTJDJTIybG9uZ2l0dWRlJTIyJTNBLTc5LjM4NDQzNjQlN0Q%3D",
         user_preferences="prefered_brand='Corona'",
     )
-    agent = asyncio.run(create_uber_eat_agent(config))
-    asyncio.run(place_order(agent))
+    agent = asyncio.run(fetch_uber_eat_options(config))
+    # asyncio.run(place_order(agent))
 
 if __name__ == "__main__":
     main()
