@@ -6,8 +6,7 @@ from typing import List
 class AI:
     def __init__(self):
         #self.api_key = os.getenv("OPEN_AI_KEY")
-        self.api_key = "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"
-
+        self.api_key = os.getenv("OPEN_AI_KEY")
         if not self.api_key:
             raise ValueError("OPENAI_API_KEY environment variable is not set")
         
@@ -93,6 +92,21 @@ Do not overwhelm the user with too many questions at once. Ask only one or two r
             response_format=Product_format,
         )
         return completion.choices[0].message.parsed
+    
+
+    def generate_test_data(self) -> str:
+        return {
+            "Name": "Budweiser",
+            "Price": "$3.75",
+            "Package Size": "6",
+            "Details": "473 ml • 5% ABV",
+            "URL": "https://www.ubereats.com/ca/store/lcbo-15-york-street/X3oCP7ePVAegUp6WBA670g/949e830c-602c-51bd-8335-74d7513cb383/33f28992-eebe-5ee8-9619-15260a64af77/1aebb116-0449-5ccc-acff-62f4ebe742c1?storeSearchQuery=beer" 
+        }
+
+
+
 
     def is_order_complete(self, content: str) -> bool:
         return "order info done" in content.lower()
+    
+
