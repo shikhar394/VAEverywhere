@@ -49,12 +49,21 @@ async def chat_endpoint(request: ChatRequest):
 async def preferences_endpoint(request: dict):
     print("REQUEST in preferences: ", request)
     ai = AI()
-    response_user_preferences = await ai.get_preferences(request["content"])
-    response_user_preferences_json = change_format_to_json_user_preferences(response_user_preferences)
-    print("RESPONSE in preferences: ", response_user_preferences_json)
+    # response_user_preferences = await ai.get_preferences(request["content"])
+    # response_user_preferences_json = change_format_to_json_user_preferences(response_user_preferences)
+    # print("RESPONSE in preferences: ", response_user_preferences_json)
+
+    response_user_preferences = {
+        "product_type": "beer",
+        "quantity": 20,
+        "is_priority": True,
+        "delivery_address": "2607 Queen Street W",
+        "details": "I want to wheat beer",
+        "preferred_brand": "Budweiser"
+    }
     #pdb.set_trace()
 
-    response_test_data = ai.generate_test_data()
+    response_test_data = ai.generate_test_data(response_user_preferences)
     print("RESPONSE in test data: ", response_test_data)
     #pdb.set_trace()
 
