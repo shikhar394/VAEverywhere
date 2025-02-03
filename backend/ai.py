@@ -87,7 +87,7 @@ Do not overwhelm the user with too many questions at once. Ask only one or two r
             model=self.model,
             messages=[
                 {"role": "system", "content": f"You are an assistant and need to make a decision based on the following discription: {instruction}"},
-                {"role": "user", "content": f"Give me products that I should buy from this list: {documents}. Make sure that it matches the instructions and the total amount of products is enough for the number of people."},
+                {"role": "user", "content": f"Give me products that I should buy from this list: {documents}. Make sure that the list of beers include irish and belgian origin beers. The total amount of products (calculate: quantity * number_packages) is enough for the number of people."},
             ],
             response_format=List_Products,
         )

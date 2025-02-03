@@ -50,21 +50,21 @@ async def fetch_uber_eat_options(config: UberEatConfig):
 
     # 4. Find and click the "Search" button (look for attributes: 'button' and 'data-testid="multi-vertical-desktop-global-search-bar-wrapper"')
     # Create the agent with detailed instructions
-    # 1. Navigate to {config.base_url} using the chrome address bar.
-    # 2. Search LCBO in the website search bar and click on the first option that says LCBO
-    # 3. Search "beer" in the website search bar that says Search LCBO (look for attributes: 'input' and id=\"search-suggestions-typeahead-input\") and click on the first option that only says beer.
     
     agent = Agent(
         task=f"""Navigate to Uber Eats and help me find all the beer options.
 
         Here are the specific steps:
 
-        1. Navigate to https://www.ubereats.com/ca/store/lcbo-272-queen-st-w/htrZejmKU1WBA_E9oy1xAg?diningMode=DELIVERY&pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMjI3NiUyMFF1ZWVuJTIwU3QlMjBXJTIyJTJDJTIycmVmZXJlbmNlJTIyJTNBJTIyODFhY2NjNGEtZThjNC1kMWIyLTBlMmMtYzAzZDg0OTIzYWJjJTIyJTJDJTIycmVmZXJlbmNlVHlwZSUyMiUzQSUyMnViZXJfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0E0My42NDk3MzQ3JTJDJTIybG9uZ2l0dWRlJTIyJTNBLTc5LjM5MjQ3ODQlN0Q%3D&sc=SEARCH_SUGGESTION&storeSearchQuery=beer using the chrome address bar.
-        2. For each product, read the product_name, price, details, size, and the quick view link for the product (href embedded under <a> tag for quick views).
+        1. Navigate to {config.base_url} using the chrome address bar.
+        2. Search LCBO in the website search bar. 
+        3. Click on the first option that says LCBO from the dropdown
+        4. Search "beer" in the website search bar that says Search LCBO (look for attributes: 'input' and id="search-suggestions-typeahead-input"").
+        5. Click on the first option from the dropdown that only says beer.
+        6. Read the the HTML of this page, read the product_name, price, details, size, and the quick view link for the product (href embedded under <a> tag for quick views). Don't try to parse them into a format just get the raw data include all the information.
         
         Important:
         - Wait for each element to load before interacting
-        - Follow the commands very carefully.
         - Remember the goal is to find options for the user.
         """,
         llm=llm,
@@ -94,12 +94,12 @@ async def fetch_uber_eat_options(config: UberEatConfig):
                 prod.quantity = int(detail_components[0].split(" ")[0])
         else:
             prod.quantity = 1
-        prod.quick_view_url = "https://www.ubereats.com/ca" + prod.quick_view_url
+        prod.quick_view_url = "https://www.ubereats.com" + prod.quick_view_url
 
     products = Products(prods=completion.choices[0].message.parsed.prods)
 
-    with open('products.json', 'w') as f:
-        f.write(products.model_dump_json())
+    # with open('products.json', 'w') as f:
+    #     f.write(products.model_dump_json())
 
 async def place_order(agent: Agent):
     try:

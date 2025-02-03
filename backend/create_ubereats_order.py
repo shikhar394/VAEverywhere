@@ -47,6 +47,7 @@ def place_order_steps():
         "{index}. Find and click the edit address button (look for attributes: 'button' and 'data-testid='data-testid='edit-delivery-address-button'",
         "{index}. Select the address that reads 276 Queen St W, Toronto, ON M5V 3A3",
         "{index}. Select the priority option on the page (look for attributes: 'button')",
+        "{index}. Click the Place Order button (look for attributes: 'button' data-test='place-order-btn')",
     ]
 
     return steps
